@@ -1,12 +1,10 @@
  #Класс Station (Станция):
  class Train
 
-  attr_accessor :speed, :wagons, :name, :current_station_index #Может возвращять текущую скорость
-  attr_reader :number, :route
-
-  TYPE = [:passanger, :cargo]
-   
-  #Имеет номер (произвольная строка) и тип (грузовой, пассажирский) и количество вагонов, эти данные указываются при создании экземпляра класса 
+  attr_accessor :speed, :wagons, :name, :current_station_index 
+  attr_reader :number, :route, :type
+  #:passanger, :cargo
+  
   def initialize(name,number,type,wagons) 
     @name = name
     @number = number
@@ -18,13 +16,11 @@
     puts "Поезд #{name} c номером #{number} и количеством вагонов #{wagons} создан, тип #{type}"
   end
 
-  #Может набирать скорость
   def add_speed(speed)
     @speed += speed
     puts "Поезд #{name} набирает скорость, текущая скорость поезда : #{speed}"
   end
 
-  #Может тормозить (сбрасывать скорость до нуля)
   def stop_train
     unless @speed.zero?
       @speed = 0
@@ -32,8 +28,6 @@
     end
   end
 
-  #Vожет прицеплять/отцеплять вагоны (по одному вагону за операцию, метод просто увеличивает или уменьшает количество вагонов). 
-  #Прицепка/отцепка вагонов может осуществляться только если поезд не движется.
   def attach_wagons 
     if @speed.zero?
       @wagons += 1
@@ -52,27 +46,39 @@
     end
   end
 
-  #Может принимать маршрут следования (объект класса Route). 
-  #При назначении маршрута поезду, поезд автоматически помещается на первую станцию в маршруте.
   def accept_route(route) 
     @route = route
-    puts "Поезду #{name} присовен маршрут #{route.stations}"
     @current_station_index = 0
+    current_station.train_in(self)
+    puts "Поезду #{name} присовен маршрут"
+    puts "Поезд #{name} перемещен на первую станцию"
+  end
+
+  def current_station
     @route.stations[@current_station_index]
-    puts "Поезд перемещен на первую станцию "
-    #<Train:0x00005652a0002be0 @name="Talgo", @number=101, @type=:passanger, @wagons=40, @speed=10, @current_station_index=0, 
-    #@route=#<Route:0x00005652a0001150 @stations=[#<Station:0x00005652a0003540 @name="Almaty", @trains=[]>, 
-    #<Station:0x00005652a0003068 @name="Karaganda", @trains=[]>, #<Station:0x00005652a0002e10 @name="Balhash", @trains=[]>]>>
   end
 
-  #Может перемещаться между станциями, указанными в маршруте. Перемещение возможно вперед и назад, но только на 1 станцию за раз.
-  def go_route
-
+  def show_next_station
+    @route.stations[@current_station_index + 1]
   end
 
-  #Возвращать предыдущую станцию, текущую, следующую, на основе маршрута
-  def route_list
+  def show_previous_station
+    return unless @current_station_index.postitve?
+    @route.stations[@current_station_index - 1]
+  end
 
+  def go_next
+    return if show_next_station.nil?
+    current_station.train_out(self)
+    @current_station_index += 1
+    current_station.train_in(self)
+  end
+
+  def go_back
+    return if previous_station.nil?
+    current_station.train_out(self)
+    @current_station_index -= 1
+    current_station.train_in(self)
   end
 
 end
@@ -80,22 +86,18 @@ end
 
 class Route
     
-  attr_accessor :stations #Может выводить список всех станций по-порядку от начальной до конечной
+  attr_accessor :stations
 
-  #Имеет начальную и конечную станцию, а также список промежуточных станций.
-  #Начальная и конечная станции указываютсся при создании маршрута
   def initialize(first_station,last_station)
     @stations = [first_station,last_station]
     puts "Маршрут #{first_station.name} #{last_station.name} создан"
   end
 
-  #Может добавлять промежуточную станцию в список
   def transit_station_add(transit_station)
     stations.insert(-2 , transit_station)
     puts "Транзитная станция #{transit_station.name} добавлена в маршрут"
   end
 
-  #Может удалять промежуточную станцию из списка
   def transit_station_delete(transit_station)
     stations.delete(transit_station)
     puts "Транзитная станция #{transit_station.name} удалена с маршрута"
@@ -109,20 +111,17 @@ class Station
   attr_accessor :trains
   attr_reader :name
 
-  #Имеет название, которое указывается при ее создании
   def initialize(name)  
     @name = name
     @trains = []
     puts "Станция #{name} создана"
   end
 
-  #Может принимать поезда (по одному за раз)
   def train_in(train)           
     @trains << train
     puts "Поезд #{train.name} прибыл на станцию #{name}"
   end
-
-  #Может возвращать список всех поездов на станции, находящиеся в текущий момент                                                                                       
+                                                                                    
   def train_at_station
     if @trains.any?
       puts "Список поездов находящиеся на станции #{name}:"
@@ -131,12 +130,11 @@ class Station
     end
   end
 
-  #Может возвращать список поездов на станции по типу (см. ниже): кол-во грузовых, пассажирских
-  def train_at_station_type
-    puts "Количество грузовых поездов на станции #{name}"
+  def train_type(type)
+    @trains.count {|train| train.type == type}
+    puts "Количество поездов с типом  #{type} #{@trains}"
   end
 
-  #Может отправлять поезда (по одному за раз, при этом, поезд удаляется из списка поездов, находящихся на станции)
   def train_out(train) 
     if @trains.any?
       @trains.delete(train)
@@ -192,6 +190,7 @@ p express
 astana.train_out(allegro)
 almaty.train_at_station
 p almaty
+almaty.train_type(:passanger)
 almaty.train_out(talgo)
 almaty.train_out(express)
 almaty.train_at_station
@@ -199,6 +198,8 @@ p almaty
 
 
 talgo.accept_route(barsakelmes)
+p talgo
+talgo.go_next
 p talgo
 
 
