@@ -10,7 +10,7 @@ class Station
 
   def train_in(train)           
     @trains << train
-    puts "Поезд #{train.name} прибыл на станцию #{name}"
+    #puts "Поезд #{train.name} прибыл на станцию #{name}"
   end
                                                                                     
   def train_at_station
@@ -23,13 +23,13 @@ class Station
 
   def train_type(type)
     @trains.count {|train| train.type == type}
-    puts "Количество поездов с типом  #{type} #{@trains}"
+    #puts "Количество поездов с типом  #{type} #{@trains}"
   end
 
   def train_out(train) 
     if @trains.any?
       @trains.delete(train)
-      puts "Поезд #{train.name} отбыл со станции #{name}"
+      #puts "Поезд #{train.name} отбыл со станции #{name}"
     end
   end
 end

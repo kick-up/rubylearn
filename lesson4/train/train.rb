@@ -43,8 +43,8 @@ class Train
     @route = route
     @current_station_index = 0
     current_station.train_in(self)
-    puts "Поезду #{number} присовен маршрут"
-    puts "Поезд #{number} перемещен на первую станцию"
+    #puts "Поезду #{number} присовен маршрут"
+    #puts "Поезд #{number} перемещен на первую станцию"
   end
 
   def current_station
