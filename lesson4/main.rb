@@ -116,7 +116,7 @@ class Main
     puts "Выберите вагон который хотите оцепить"
     show_collection(train.wagons)
     wagon = gets.to_i
-    train.detach_wagons(train.wagons[wagons])
+    train.detach_wagons(train.wagons[wagon])
   end
 
   def train_controller

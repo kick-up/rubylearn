@@ -31,11 +31,11 @@ class Train
   end
 
   def detach_wagons(wagon)
-    if @wagons.zero?
-      puts "У поезда #{number} нет вагонов чтобы оцепить" 
-    else
+    if @wagons.any?
       @wagons.delete_at(-1)
       puts "C поезда #{number} отцеплен 1 вагон всего вагонов : #{wagons}"
+    else
+      puts "У поезда #{number} нет вагонов чтобы оцепить" 
     end
   end
 

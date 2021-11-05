@@ -1,12 +1,12 @@
 class PassangerTrain < Train
   
   def initialize(number)
-    @type = "Пассажирский"
+    @type = :passenger
     super
   end
 
   def attachable_wagon?(wagon)
-    wagon.is_a?(PassangerWagon)
+    self.type == wagon.type
   end
   
 end
