@@ -39,6 +39,10 @@ class Train
     end
   end
 
+  def attachable_wagon?(wagon)
+    self.type == wagon.type
+  end
+
   def accept_route(route) 
     @route = route
     @current_station_index = 0
