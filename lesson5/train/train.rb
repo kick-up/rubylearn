@@ -4,7 +4,7 @@ class Train
   attr_writer :wagons
   attr_reader :number, :route, :type, :speed , :wagons
 
-  @@trains = []
+  @@trains = {}
 
   def self.find(number)
       @@trains[number]
@@ -16,7 +16,7 @@ class Train
     @speed = 0
     @current_station_index = 0
     @route = []
-    @@trains << self
+    @@trains = self
     puts "#{type} поезд c номером #{number} создан"
   end
 
