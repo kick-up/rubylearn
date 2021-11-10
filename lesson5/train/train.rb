@@ -16,6 +16,7 @@ class Train
     @speed = 0
     @current_station_index = 0
     @route = []
+    @@trains << self
     puts "#{type} поезд c номером #{number} создан"
   end
 
