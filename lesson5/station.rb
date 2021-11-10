@@ -1,18 +1,20 @@
 class Station
   include InstanceCounter
   @@station_number = 0
+  @@stations = []
 
   attr_accessor :trains
   attr_reader :name
 
   def self.all
-    @@station_number
+    @@stations
   end
 
   def initialize(name)  
     @name = name
     @trains = []
     @@station_number += 1
+    @@stations << self
   end
 
   def train_in(train)           
