@@ -15,8 +15,8 @@ class Route
     @first_station = first_station
     @last_station = last_station
     @transit_station = []
-    register_instance
     validate!
+    register_instance
   end
 
   def transit_station_add(transit_station)

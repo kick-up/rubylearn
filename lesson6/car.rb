@@ -27,10 +27,12 @@ class Car
   protected
 
   def validate!
-    raise "Number is nil" if number.nil?
-    raise "Number 6 simbol" if number.length < 6 
-    raise "Number format" if number !~ NUMBER_FORMAT
+    errors = []
+    errors << "Number is nil" if number.nil?
+    errors << "Number 6 simbol" if number.length < 6 
+    errors << "Number format" if number !~ NUMBER_FORMAT
     true
+    raise errors.join(";") unless errors.empty?
   end
 
   attr_writer :current_rpm

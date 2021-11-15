@@ -28,9 +28,9 @@ class Train
     @speed = 0
     @current_station_index = 0
     @route = []
+    validate!
     @@trains[number] = self
     register_instance
-    validate!
   end
 
   def add_speed(speed)
