@@ -10,8 +10,6 @@ class Wagon
 
   WRONG_TYPE = "Не верный формат: для пассажирского вагона необходимо указать :passenger"\
   "для грузового вагона необходимо указать :cargo"
-  TYPE = /^\w{1}[a-z]{4,8}$/
-
   attr_reader :type
   
   def initialize(type)
@@ -23,7 +21,6 @@ class Wagon
   protected
 
   def validate!
-    raise WRONG_TYPE if type !~TYPE
+    raise WRONG_TYPE unless type == :cargo || type == :passenger
   end
-
 end

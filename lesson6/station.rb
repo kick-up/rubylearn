@@ -48,6 +48,15 @@ class Station
     end
   end
 
+  def train_search
+    trains.each do |train|
+      yield train
+    end
+  end
+
+  #station.train_search {|train| puts train}
+
+
   protected
   
   def validate!
