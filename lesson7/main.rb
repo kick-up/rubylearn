@@ -23,24 +23,23 @@ class Main
 
   def menu
     puts "*********************************************"
+    show_list
+    puts "*********************************************"
     puts "ПАНЕЛЬ УПРАВЛЕНИЯ ЖЕЛЕЗНОДОРОЖНОЙ СТАНЦИЕЙ"
     puts "*********************************************"
     puts "Выберите соответствующий номер для выполнения"
     puts "1. Создать станцию"
     puts "2. Создать поезд"
-    puts "3. Создать маршрут"
-    puts "4. Назначить маршрут поезду"
-    puts "5. Создать вагон"
-    puts "6. Добавить вагон к поезду"
-    puts "7. Отцепить вагон от поезда"
-    puts "8. Управление поездом"
-    puts "9. Посмотреть список вагонов у поезда"   
-    puts "10. Посмотреть список поездов на станции" 
-    puts "11. Занять место или обьем в вагоне"
-    #puts "9. Просмотреть список станции и поездов на станции"
+    puts "3. Добавить вагон к поезду"
+    puts "4. Отцепить вагон от поезда"
+    puts "5. Занять место или обьем в вагоне"
+    puts "6. Создать маршрут"
+    puts "7. Назначить маршрут поезду"
+    puts "8. Добавить транзитную станцию в маршрут"
+    puts "9. Управление поездом"
     puts "0. Чтобы выйти с программы"
     puts "**************************************************"
-    show_list
+    show
   end
 
   def choice
@@ -50,15 +49,13 @@ class Main
       case choice
       when 1 then create_station
       when 2 then create_train
-      when 3 then create_route
-      when 4 then assign_route
-     # when 5 then create_wagon
-      when 6 then attach_wagon_controller
-      when 7 then detach_wagon_controller
-      when 8 then train_controller
-      when 9 then train_wagons
-      when 10 then train_at_station
-      when 11 then take_place_or_volume
+      when 3 then attach_wagon_controller
+      when 4 then detach_wagon_controller
+      when 5 then take_place_or_volume 
+      when 6 then create_route
+      when 7 then assign_route
+      when 8 then add_transit_station
+      when 9 then train_controller
       when 0 then exit
       end
     end
@@ -82,8 +79,64 @@ class Main
     begin
       train_number = gets.chomp
       @trains << train_type.new(train_number)
+      puts "Вы добавили поезд под №#{train_number}"
     rescue => e
       puts e.inspect
+    end
+  end
+
+  def attach_wagon_controller
+    puts "Чтобы прицепить вагон к поезду выберите индекс поезда"
+    show_collection(@trains)
+    train = select_from_collection(@trains)
+    puts "Выберите типа вагона: 1- Пассажирский или 2 - Грузовой"
+    wagons = gets.to_i
+    case wagons
+    when 1
+      puts "Уажите количество мест пассажирского вагона:"
+      volume = gets.to_i
+      wagon = PassangerWagon.new(volume)
+      train.attach_wagons(wagon)
+      @wagons << wagon
+    when 2
+      puts "Уажите обьем грузового вагона:"
+      volume = gets.to_i
+      wagon = CargoWagon.new(volume)
+      train.attach_wagons(wagon)
+      @wagons << wagon
+    end
+  end
+
+  def detach_wagon_controller
+    puts "Чтобы оцепить вагон от поезда выберите поезд по индексу" 
+    show_collection(@trains)
+    train = select_from_collection(@trains)
+    puts "Выберите вагон который хотите оцепить"
+    show_collection(train.wagons)
+    wagon = gets.to_i
+    train.detach_wagons(train.wagons[wagon])
+    p train
+  end
+
+  def take_place_or_volume
+    puts "Выберите поезд"
+    show_collection(@trains)
+    train = select_from_collection(@trains)
+    puts "Выберите вагон"
+    show_collection(train.wagons)
+    wagon = select_from_collection(train.wagons)
+    case train.type
+    when :passenger
+      puts "Вы заняли одно место"
+      wagon.take_place
+      free = wagon.free_volume
+      puts "Свободные места #{free}"
+    when :cargo
+      puts "Укажите объем погрузки:"
+      volume = gets.to_i
+      wagon.take_volume(volume)
+      free = wagon.free_volume
+      puts "Свободный обьем #{free}"
     end
   end
 
@@ -99,23 +152,9 @@ class Main
     return if first_station.nil? || last_station.nil?
     return if first_station == last_station
     @routes << Route.new(first_station,last_station)
+    puts "Вы добавили маршрут c #{first_station.name} до #{last_station.name}"
   end
 
-
-  #def create_wagon
-   # puts "Выберите тип создаваемого вагона: 1 - Пассажирский, 2 - Грузовой"
-    #wagons = gets.to_i
-    #case wagons
-    #when 1
-     # puts "Укажите количество посадочных мест:"
-      #number_of_seats = gets.to_i
-      #@wagons << PassangerWagon.new(number_of_seats)
-    #when 2
-     # puts "Укажите обьем грузового вагона:"
-      #volume = gets.to_i
-      #@wagons << CargoWagon.new(volume)
-     #end
-  #end
 
   def assign_route
     puts "Назначить маршрут поезду"
@@ -127,36 +166,19 @@ class Main
     show_collection(@routes)
     route = select_from_collection(@routes)
     train.accept_route(route)
+    puts "Поезду #{train.number} присвоен маршрут #{route.first_station.name} - #{route.last_station.name}"
   end
-
-  def attach_wagon_controller
-    puts "Чтобы прицепить вагон к поезду выберите индекс"
-    show_collection(@trains)
-    train = select_from_collection(@trains)
-    puts "Выберите типа вагона: 1- Пассажирский или 2 - Грузовой"
-    wagons = gets.to_i
-    case wagons
-    when 1
-      puts "Уажите количество мест пассажирского вагона:"
-      number_of_seats = gets.to_i
-      train.attach_wagons(PassangerWagon.new(number_of_seats))
-      p train
-    when 2
-      puts "Уажите обьем грузового вагона:"
-      volume = gets.to_i
-      train.attach_wagons(CargoWagon.new(volume))
-      p train
-    end
-  end
-
-  def detach_wagon_controller
-    puts "Чтобы оцепить вагон от поезда выберите индекс" 
-    show_collection(@trains)
-    train = select_from_collection(@trains)
-    puts "Выберите вагон который хотите оцепить"
-    show_collection(train.wagons)
-    wagon = gets.to_i
-    train.detach_wagons(train.wagons[wagon])
+  
+  def add_transit_station
+    puts "Добавьте транзитную станцию в маршрут из списка"
+    puts "Выберите маршрут"
+    show_collection(@routes)
+    route = select_from_collection(@routes)
+    puts "Добавьте транзитную станцию для маршрута"
+    show_collection(@stations)
+    transit_station = select_from_collection(@stations)
+    route.transit_station_add(transit_station)
+    puts "Транзитная станция #{transit_station.name} добавлена"
   end
 
   def train_controller
@@ -173,44 +195,35 @@ class Main
       train.go_back
       puts "Текущая станция: #{train.current_station}"
     end
-  end
-
- #Выводить список вагонов у поезда (#кол-во мест или общий объем), используя созданные методы
-  def train_wagons
-    puts "Выберите поезд у которого хотите посмотреть список вагонов"
-    show_collection(@trains)
-    train = select_from_collection(@trains)
-    if train.type == :cargo 
-      train.free_volume
-    end
-  end
-  
- #Выводить список поездов на станции (#кол-во мест или общий объем), используя  созданные методы
- # def train_at_station
-   #puts "Выберите вагон который хотите оцепить"
-    #show_collection(train.wagons)
-    #wagon = gets.to_i
-    #train.detach_wagons(train.wagons[wagon])
-  #end
-
- # Занимать место или объем в вагоне
-  #def take_place_or_volume
-   # puts "Выберите вагон в котором хотите занять место"
-   # show_collection(@wagons)
-    #select_from_collection(@wagons)
-
-  #end
+  end 
 
 
   def show_list
-    puts "Список станций:"
+    puts "*Список станций:"
     show_collection(@stations)
-    puts "Список поездов:"
+    puts "*Список поездов:"
     show_collection(@trains)
-    puts "Список маршрутов"
+    puts "*Список маршрутов"
     show_collection(@routes)
-    puts "Список вагонов:"
+    puts "*Список вагонов:"
     show_collection(@wagons)
+  end  
+
+  def show
+    @trains.each do |train|
+      puts "Количество вагонов у #{train.type} у поезда №#{train.number}:"
+      wagons = train.wagons
+      num = wagons.count
+      puts "#{num}"
+      train.wagon_search {|wagon|  wagon = wagon.busy_volume; puts "Занятых мест в вагоне #{wagon}"}
+      train.wagon_search {|wagon|  wagon = wagon.free_volume; puts "Свободных мест в вагоне #{wagon}"}
+    end
+
+      
+    @stations.each do |station|
+      puts "Поезда на станции #{station.name}:"
+      station.train_search {|train| puts train}
+    end
   end
 
   def show_collection(collection)
@@ -229,4 +242,3 @@ end
 
 new_session = Main.new
 new_session.choice
-

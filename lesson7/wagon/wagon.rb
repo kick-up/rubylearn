@@ -11,11 +11,20 @@ class Wagon
   WRONG_TYPE = "Не верный формат: для пассажирского вагона необходимо указать :passenger"\
   "для грузового вагона необходимо указать :cargo"
   attr_reader :type
+  attr_accessor :place, :volume, :type
   
   def initialize(type)
     @type = type
     validate!
     register_instance
+  end
+
+  def busy_volume
+    place
+  end
+
+  def free_volume
+    volume
   end
 
   protected

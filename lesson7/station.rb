@@ -54,8 +54,6 @@ class Station
     end
   end
 
-  #station.train_search {|train| puts train}
-
   protected
   
   def validate!

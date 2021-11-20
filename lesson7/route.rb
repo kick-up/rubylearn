@@ -28,7 +28,7 @@ class Route
   end
 
   def stations
-    [@first_station,@transit_station, @last_station]
+    [@first_station,*@transit_station, @last_station]
   end
 
   protected 

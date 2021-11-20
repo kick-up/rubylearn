@@ -86,7 +86,7 @@ class Train
   end
 
   def go_back
-    return if previous_station.nil?
+    return if show_previous_station.nil?
     current_station.train_out(self)
     @current_station_index -= 1
     current_station.train_in(self)
@@ -98,9 +98,6 @@ class Train
     end
   end
 
-  #train.wagon_search {|wagon| puts wagon}
-
-    
   protected 
 
   def validate!
