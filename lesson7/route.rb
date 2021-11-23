@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 require_relative './instancecounter'
 require_relative './validation'
 
 class Route
-
   include InstanceCounter
   include Validation
 
-  attr_reader :first_station, :last_station, :transit_station, :stations
+  OBJECT_NIL = 'Маршрут должен иметь начальную или конечную станцию'
+  BIFURCATION = 'Станция не может быть конечной и начальной одновременно'
 
-  OBJECT_NIL = "Маршрут должен иметь начальную или конечную станцию"
-  BIFURCATION = "Станция не может быть конечной и начальной одновременно"
+  attr_reader :first_station, :last_station, :transit_station
 
-  def initialize(first_station,last_station)
+  def initialize(first_station, last_station)
     @first_station = first_station
     @last_station = last_station
     @transit_station = []
@@ -28,14 +29,13 @@ class Route
   end
 
   def stations
-    [@first_station,*@transit_station, @last_station]
+    [@first_station, *@transit_station, @last_station]
   end
 
-  protected 
+  protected
 
   def validate!
     raise OBJECT_NIL if first_station.nil? || last_station.nil?
     raise BIFURCATION if first_station == last_station
   end
-
 end

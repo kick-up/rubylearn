@@ -1,27 +1,28 @@
+# frozen_string_literal: true
+
 require_relative '../instancecounter'
 require_relative '../validation'
 require_relative '../manufacturer'
-
 
 class Train
   include Manufacturer
   include InstanceCounter
   include Validation
 
-  attr_writer :wagons
-  attr_reader :number, :route, :type, :speed , :wagons
+  NUMBER_FORMAT = /^[a-z\d]{3}-?[a-z\d]{2}$/i.freeze
+  WRONG_NAME = 'Неверный формат. Вам необходимо: три буквы латинские буквы '\
+  'или цифры в любом порядке необязательный дефис (может быть, а может нет) '\
+   'и еще 2 буквы латинские буквы или цифры после дефиса.'
 
-  NUMBER_FORMAT = /^[a-z\d]{3}-?[a-z\d]{2}$/i
-  WRONG_NAME = "Неверный формат. Вам необходимо: три буквы латинские буквы "\
-    "или цифры в любом порядке необязательный дефис (может быть, а может нет) "\
-    "и еще 2 буквы латинские буквы или цифры после дефиса."
+  attr_accessor :wagons
+  attr_reader :number, :route, :type, :speed
 
   @@trains = {}
 
   def self.find(number)
-      @@trains[number]
+    @@trains[number]
   end
-  
+
   def initialize(number)
     @number = number
     @wagons = []
@@ -38,28 +39,25 @@ class Train
   end
 
   def stop_train
-    unless @speed.zero?
-      @speed = 0
-    end
+    @speed = 0 unless @speed.zero?
   end
 
   def attach_wagons(wagon)
     return unless @speed.zero?
     return unless attachable_wagon?(wagon)
+
     @wagons << wagon
   end
 
-  def detach_wagons(wagon)
-    if @wagons.any?
-      @wagons.delete_at(-1)
-    end
+  def detach_wagons(_wagon)
+    @wagons.delete_at(-1) if @wagons.any?
   end
 
   def attachable_wagon?(wagon)
-    self.type == wagon.type
+    type == wagon.type
   end
 
-  def accept_route(route) 
+  def accept_route(route)
     @route = route
     @current_station_index = 0
     current_station.train_in(self)
@@ -75,11 +73,13 @@ class Train
 
   def show_previous_station
     return unless @current_station_index.postitve?
+
     @route.stations[@current_station_index - 1]
   end
 
   def go_next
     return if show_next_station.nil?
+
     current_station.train_out(self)
     @current_station_index += 1
     current_station.train_in(self)
@@ -87,22 +87,19 @@ class Train
 
   def go_back
     return if show_previous_station.nil?
+
     current_station.train_out(self)
     @current_station_index -= 1
     current_station.train_in(self)
   end
 
-  def wagon_search
-    wagons.each do |wagon|
-      yield wagon
-    end
+  def wagon_search(&block)
+    wagons.each(&block)
   end
 
-  protected 
+  protected
 
   def validate!
     raise WRONG_NAME if number !~ NUMBER_FORMAT
   end
-
-
 end

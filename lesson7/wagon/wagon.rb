@@ -1,18 +1,19 @@
+# frozen_string_literal: true
+
 require_relative '../manufacturer'
 require_relative '../instancecounter'
 require_relative '../validation'
 
 class Wagon
-
   include Manufacturer
   include InstanceCounter
   include Validation
 
-  WRONG_TYPE = "Не верный формат: для пассажирского вагона необходимо указать :passenger"\
-  "для грузового вагона необходимо указать :cargo"
-  attr_reader :type
+  WRONG_TYPE = 'Не верный формат: для пассажирского вагона необходимо указать :passenger'\
+  'для грузового вагона необходимо указать :cargo'
+
   attr_accessor :place, :volume, :type
-  
+
   def initialize(type)
     @type = type
     validate!
