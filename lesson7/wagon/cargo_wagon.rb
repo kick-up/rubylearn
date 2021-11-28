@@ -2,6 +2,7 @@
 
 require_relative '../instancecounter'
 require_relative '../manufacturer'
+require_relative './wagon'
 
 class CargoWagon < Wagon
   attr_accessor :place

@@ -2,6 +2,7 @@
 
 require_relative '../instancecounter'
 require_relative '../manufacturer'
+require_relative './train'
 
 class PassangerTrain < Train
   def initialize(number)

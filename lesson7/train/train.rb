@@ -5,18 +5,21 @@ require_relative '../validation'
 require_relative '../manufacturer'
 
 class Train
-  include Manufacturer
-  include InstanceCounter
-  include Validation
 
   NUMBER_FORMAT = /^[a-z\d]{3}-?[a-z\d]{2}$/i.freeze
   WRONG_NAME = 'Неверный формат. Вам необходимо: три буквы латинские буквы '\
   'или цифры в любом порядке необязательный дефис (может быть, а может нет) '\
    'и еще 2 буквы латинские буквы или цифры после дефиса.'
 
+  include Manufacturer
+  include InstanceCounter
+  include Validation
+
   attr_accessor :wagons
   attr_reader :number, :route, :type, :speed
 
+  validate :number, :format, NUMBER_FORMAT
+  
   @@trains = {}
 
   def self.find(number)

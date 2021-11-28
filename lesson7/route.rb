@@ -2,13 +2,18 @@
 
 require_relative './instancecounter'
 require_relative './validation'
+require_relative './station'
 
 class Route
-  include InstanceCounter
-  include Validation
 
   OBJECT_NIL = 'Маршрут должен иметь начальную или конечную станцию'
   BIFURCATION = 'Станция не может быть конечной и начальной одновременно'
+
+  include InstanceCounter
+  include Validation
+
+  validate :origin, :type, Station
+  validate :destination, :type, Station
 
   attr_reader :first_station, :last_station, :transit_station
 

@@ -5,12 +5,14 @@ require_relative '../instancecounter'
 require_relative '../validation'
 
 class Wagon
+
+  WRONG_TYPE = 'Не верный формат: для пассажирского вагона необходимо указать :passenger'\
+  'для грузового вагона необходимо указать :cargo'
+
   include Manufacturer
   include InstanceCounter
   include Validation
 
-  WRONG_TYPE = 'Не верный формат: для пассажирского вагона необходимо указать :passenger'\
-  'для грузового вагона необходимо указать :cargo'
 
   attr_accessor :place, :volume, :type
 

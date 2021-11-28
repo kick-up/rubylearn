@@ -2,18 +2,24 @@
 
 require_relative './instancecounter'
 require_relative './validation'
+require_relative './acсessors'
 
 class Station
-  include InstanceCounter
-  include Validation
-
+  
   NAME_FORMAT = /^\w{3,}$/i.freeze
   WRONG_NAME = 'Неверный формат: Неверный формат. Используйте любые 3 латинские буквы, цифры и символы - и _'
 
-  @@stations = []
+  include InstanceCounter
+  include Validation
+  extend  Acсessors
 
-  attr_accessor :name
+  attr_accessor_with_history :name
   attr_reader :trains
+
+  validate :name, :presence
+  validate :name, :format, NAME_FORMAT
+
+  @@stations = []
 
   def self.all
     @@stations
