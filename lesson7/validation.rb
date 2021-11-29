@@ -1,4 +1,9 @@
 module Validation
+  def self.included(base)
+    base.extend         ClassMethods
+    base.send :include, InstanceMethods
+  end
+
   module ClassMethods
     attr_reader :validations
 
@@ -38,10 +43,5 @@ module Validation
     rescue StandardError => e
       false
     end
-
-  end
-  def self.included(receiver)
-    receiver.extend         ClassMethods
-    receiver.send :include, InstanceMethods
-  end
+  end  
 end

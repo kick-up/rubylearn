@@ -11,7 +11,7 @@ module Acсessors
 
       define_method("#{attribute}=".to_sym) do |value|
         if instance_variable_get (var_name_history).nil?
-          instance_variable_set ( var_name_history, [] )
+          instance_variable_set (var_name_history)
         else
           value = instance_variable_get(var_name)
           instance_variable_set(var_name_history,value)

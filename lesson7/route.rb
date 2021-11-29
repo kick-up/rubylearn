@@ -12,8 +12,8 @@ class Route
   include InstanceCounter
   include Validation
 
-  validate :origin, :type, Station
-  validate :destination, :type, Station
+  validate :first_station, :type, Station
+  validate :last_station, :type, Station
 
   attr_reader :first_station, :last_station, :transit_station
 
